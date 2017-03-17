@@ -1,0 +1,15 @@
+{
+  "name": "hellobot",
+  "version": "1.0.0",
+  "description": "Hello World bot with Microsoft Bot Framework",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Vasanth Pandiarajan <itsmevasanth@hotmail.com>",
+  "license": "ISC",
+  "dependencies": {
+    "botbuilder": "^3.7.0",
+    "restify": "^4.3.0"
+  }
+}
