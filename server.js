@@ -3,6 +3,7 @@ var builder = require('botbuilder');
 var Player = require('./player');
 var Board = require('./board');
 
+var players = {}
 //=========================================================
 // Bot Setup
 //=========================================================
@@ -43,7 +44,38 @@ bot.dialog('/', [
       session.send(JSON.stringify(Board));
     } else {
       // session.send("Hello " + date);
-      builder.Prompts.text(session, "Enter your name");
+      session.beginDialog('/newgame');
+      // builder.Prompts.text(session, "Enter your name");
     }
   }
 ]);
+
+bot.dialog('/newgame', [
+  function(session, next) {
+    if !(session.userData.name) {
+      session.send("You are starting a new game");
+      builder.Prompts.text(session, "Enter your name");    
+    } else {
+      next();
+    }
+  },
+  function(session, results) {
+    session.userData.name = results.response;
+    session.send(`Welcome ${session.userData.name}`);
+    var player1 = new Player(session.userData.name);
+    var player2 = new Player('Computer');
+
+    players[session.userData.name] = player1;
+    players['computer'] = player2;
+
+    session.send(`You are now playing against ${session.userData.opponent.name}`);
+    builder.Prompts.text(session, "Type 'roll' to roll dice.");
+  },
+  function(session, results) {
+    console.log(session);
+    console.log(results);
+
+    players[session.userData.name].rollDice();
+    session.send("Hello");
+  }
+])
