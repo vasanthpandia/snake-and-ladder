@@ -1,5 +1,7 @@
 var restify = require('restify');
 var builder = require('botbuilder');
+var Player = require('./player');
+var Board = require('./board');
 
 //=========================================================
 // Bot Setup
@@ -24,16 +26,24 @@ server.post('/api/messages', connector.listen());
 bot.dialog('/', [
   function(session) {
     session.send("Messers Moony, Wormtail, Padfoot and Prongs welcome you to the Marauders' Bot");
+    session.send("Welcome to Snake and Ladder");
+    builder.Prompts.choice(session, "Select an option", ['View Board', 'New Game']);
 
-    builder.Prompts.text(session, 'Reveal yourselves!');
+    // builder.Prompts.text(session, 'Reveal yourselves!');
+    // builder.Prompts.choice(session, "Select your gender", ['male', 'female', 'neutral']);
+    // builder.Prompts.attachment(session, "Send me your picture");
   },
   function(session, results) {
     console.log(results);
-    name = results.response;
-    if (name === 'Snape') {
-      session.send("Messer Moony asks Snivellous to keep his greasy hair to himself");
+    console.log(results);
+    let choice = results.response.index;
+    // date = results.entity;
+    if (choice === 0) {
+      // session.send("Messer Moony asks Snivellous to keep his greasy hair to himself");
+      session.send(JSON.stringify(Board));
     } else {
-      session.send("Hello " + results.response);
+      // session.send("Hello " + date);
+      builder.Prompts.text(session, "Enter your name");
     }
   }
 ]);
