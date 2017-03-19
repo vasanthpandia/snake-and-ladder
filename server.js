@@ -52,7 +52,7 @@ bot.dialog('/', [
 
 bot.dialog('/newgame', [
   function(session, next) {
-    if !(session.userData.name) {
+    if (!(session.userData.name)) {
       session.send("You are starting a new game");
       builder.Prompts.text(session, "Enter your name");    
     } else {
