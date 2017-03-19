@@ -78,4 +78,23 @@ bot.dialog('/newgame', [
     players[session.userData.name].rollDice();
     session.send("Hello");
   }
+]);
+
+bot.dialog('/roll', [
+  function(session) {
+    if(session.userData.name) {
+      let player = players[session.userData.name];
+      let computer = players['computer'];
+      player.rollDice();
+      session.send(`You rolled ${player.lastRolled}`);
+      session.send(`Your new position is ${player.position}`);
+      let gameOutput = player.followBoard;
+
+      if (gameOutput.result === 'snake') {
+        session.send(`Ouch..! You were bitten by a snake at ${gameOutput.initialPosition}. You are now at ${this.position}`);
+      } else if (gameOutput.result === 'ladder') {
+        session.send(`Woohoo! You are moving up the ladder from ${gameOutput.initialPosition} to ${this.position}`);
+      }
+    }
+  }
 ])
