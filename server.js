@@ -29,10 +29,6 @@ bot.dialog('/', [
     session.send("Messers Moony, Wormtail, Padfoot and Prongs welcome you to the Marauders' Bot");
     session.send("Welcome to Snake and Ladder");
     builder.Prompts.choice(session, "Select an option", ['View Board', 'New Game']);
-
-    // builder.Prompts.text(session, 'Reveal yourselves!');
-    // builder.Prompts.choice(session, "Select your gender", ['male', 'female', 'neutral']);
-    // builder.Prompts.attachment(session, "Send me your picture");
   },
   function(session, results) {
     console.log(results);
@@ -54,7 +50,7 @@ bot.dialog('/newgame', [
   function(session, next) {
     if (!(session.userData.name)) {
       session.send("You are starting a new game");
-      builder.Prompts.text(session, "Enter your name");    
+      builder.Prompts.text(session, "Enter your name");
     } else {
       next();
     }
@@ -82,19 +78,57 @@ bot.dialog('/newgame', [
 
 bot.dialog('/roll', [
   function(session) {
-    if(session.userData.name) {
-      let player = players[session.userData.name];
-      let computer = players['computer'];
-      player.rollDice();
-      session.send(`You rolled ${player.lastRolled}`);
-      session.send(`Your new position is ${player.position}`);
-      let gameOutput = player.followBoard;
+    builder.Prompts.choice(session, 'Select a choice to proceed', ['roll', 'quit']);
+  },
+  function(session, results) {
+    if (results.response.index === 0) {
+      if(session.userData.name) {
+        let player = players[session.userData.name];
 
-      if (gameOutput.result === 'snake') {
-        session.send(`Ouch..! You were bitten by a snake at ${gameOutput.initialPosition}. You are now at ${this.position}`);
-      } else if (gameOutput.result === 'ladder') {
-        session.send(`Woohoo! You are moving up the ladder from ${gameOutput.initialPosition} to ${this.position}`);
+        playGame(session, player);
+
+        if (player.lastRolled === 1) {
+          session.send('You can roll again since you rolled 1');
+          session.beginDialog('/roll');
+        } else {
+          session.beginDialog('/computer-turn');
+        }
       }
+    } else {
+      session.beginDialog('/quit');
     }
   }
-])
+]);
+
+bot.dialog('/computer-turn', [
+  function(session) {
+    session.send("Its computer's turn now.");
+    let player = players['computer'];
+
+    playGame(session, player)
+
+    if (player.lastRolled === 1) {
+      session.send('You can roll again since you rolled 1');
+      session.beginDialog('/computer-turn');
+    } else {
+      session.beginDialog('/roll');
+    }
+  }
+]);
+
+bot.dialog('/quit', function(session) {
+  session.send('Thank you for trying the game');
+})
+
+function playGame(session, player) {
+  player.rollDice();
+  session.send(`You rolled ${player.lastRolled}`);
+  session.send(`Your new position is ${player.position}`);
+  let gameOutput = player.followBoard;
+
+  if (gameOutput.result === 'snake') {
+    session.send(`Ouch..! Bitten by a snake at ${gameOutput.initialPosition}. Now at ${this.position}`);
+  } else if (gameOutput.result === 'ladder') {
+    session.send(`Woohoo! Moving up the ladder from ${gameOutput.initialPosition} to ${this.position}`);
+  }
+}
