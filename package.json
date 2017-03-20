@@ -1,5 +1,5 @@
 {
-  "name": "hellobot",
+  "name": "snake-and-ladder",
   "version": "1.0.0",
   "description": "Hello World bot with Microsoft Bot Framework",
   "main": "server.js",
